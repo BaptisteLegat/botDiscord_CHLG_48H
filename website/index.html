@@ -4,6 +4,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
     <link rel="stylesheet" href="assets/css/main.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
     <noscript>
         <link rel="stylesheet" href="assets/css/noscript.css"/>
     </noscript>
@@ -26,10 +27,12 @@
         <div class="inner">
             <h2>Menu</h2>
             <ul class="links">
-                <li><a id="about">A propos</a></li>
-                <li><a id="team">Notre Equipe</a></li>
-                <li><a id="command">Les commandes</a></li>
-                <li><a id="download">Télécharger</a></li>
+                <ul class="links">
+                    <li><a href="#about" id="headerAbout">A propos</a></li>
+                    <li><a href="#team" id="headerTeam">Notre Equipe</a></li>
+                    <li><a href="#commands" id="headerCommand">Les commandes</a></li>
+                    <li><a href="#telecharger" id="headerDownload">Télécharger</a></li>
+                </ul>
             </ul>
             <a href="#" class="close">Close</a>
         </div>
@@ -46,7 +49,7 @@
     </section>
 
     <!-- Wrapper -->
-    <section class="wrapper">
+    <section id="wrapper">
         <div id="about">
             <section id="one" class="wrapper spotlight style1">
                 <div class="inner">
@@ -88,9 +91,7 @@
             </section>
         </div>
     </section>
-    <!-- Wrapper -->
-    <section class="wrapper">
-        <!-- Four -->
+    <div id="team">
         <section id="four" class="wrapper alt style1">
             <div class="inner">
                 <h2 class="major">La dream team</h2>
@@ -161,36 +162,36 @@
                 </section>
             </div>
         </section>
-    </section>
-
-    <!-- Footer -->
-    <section id="footer">
-        <div class="inner">
-            <h2 class="major">Les lignes de commandes</h2>
-            <div class="command-line-container">
-                <div class="command-line-wrapper">
-                    <p class="command-line">!wahou</p>
-                    <p class="command-description">Affiche un message de surprise et d'émerveillement.</p>
+    </div>
+    <div id="commands">
+        <section id="footer">
+            <div class="inner">
+                <h2 class="major">Les lignes de commandes</h2>
+                <div class="command-line-container">
+                    <div class="command-line-wrapper">
+                        <p class="command-line">!wahou</p>
+                        <p class="command-description">Affiche un message de surprise et d'émerveillement.</p>
+                    </div>
+                    <a href="./images/homer.gif" target="_blank" class="command-result-gif">
+                        <img src="./images/homer.gif" alt="Résultat de la commande salut">
+                    </a>
                 </div>
-                <a href="./images/homer.gif" target="_blank" class="command-result-gif">
-                    <img src="./images/homer.gif" alt="Résultat de la commande salut">
-                </a>
-            </div>
 
-            <div class="command-line-container">
-                <div class="command-line-wrapper">
-                    <p class="command-line">salut</p>
-                    <p class="command-description">Envoie un message de salutation aux autres utilisateurs.</p>
+                <div class="command-line-container">
+                    <div class="command-line-wrapper">
+                        <p class="command-line">salut</p>
+                        <p class="command-description">Envoie un message de salutation aux autres utilisateurs.</p>
+                    </div>
+                    <a href="./images/dog.gif" target="_blank" class="command-result-gif">
+                        <img src="./images/dog.gif" alt="Résultat de la commande salut">
+                    </a>
                 </div>
-                <a href="./images/dog.gif" target="_blank" class="command-result-gif">
-                    <img src="./images/dog.gif" alt="Résultat de la commande salut">
-                </a>
+                <ul class="copyright">
+                    <li>&copy; Tout droit réserver</li>
+                </ul>
             </div>
-            <ul class="copyright">
-                <li>&copy; Tout droit réserver</li>
-            </ul>
-        </div>
-    </section>
+        </section>
+    </div>
 </div>
 
 <!-- Scripts -->

@@ -8,6 +8,7 @@ import pytz
 from datetime import datetime, timedelta
 import sqlite3
 import re
+import random
 
 intents = discord.Intents.default()
 intents.members = True
@@ -16,12 +17,14 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 openai.api_key = "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"
 kolok_role_name = "Kolok"
 
+
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send('Commande inconnue.')
     else:
         raise error
+
 
 @bot.command()
 async def send(ctx):
@@ -30,6 +33,7 @@ async def send(ctx):
     text_to_send = message.split('!send ')[1]
     await channel.send(text_to_send)
     await ctx.message.delete()
+
 
 @bot.event
 async def on_raw_reaction_add(payload):
@@ -61,16 +65,19 @@ async def on_raw_reaction_add(payload):
             message = "Vous vous êtes bien inscrit au Yrappel\nVeuillez m'envoyer votre lien privé Hyperplanning précédé de la commande !verify\n\nPour obtenir ce lien veuillez vous rendre sur votre emplois du temps Hyperplanning et cliquer sur le petit logo ical en haut à droite\nExemple : !verify https://hp22.ynov.com/LYO/Telechargements/ical/Edt_YOURNAME"
             await member.send(message)
 
+
 @bot.command()
 async def sondage(ctx, question, *options):
     message = f"{question}\n\nRépondez avec les réactions ci-dessous :\n"
     for option in options:
         message += f"{options.index(option)+1}: {option}\n"
-    reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"]
+    reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣",
+                 "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"]
     message = await ctx.send("**{}**\n\n{}".format(question, "\n".join("{} {}".format(reactions[i], option) for i, option in enumerate(options))))
     for i in range(len(options)):
         await message.add_reaction(reactions[i])
     await ctx.message.delete()
+
 
 @bot.command()
 async def afterwork(ctx):
@@ -83,6 +90,27 @@ async def afterwork(ctx):
 pedagogie_emoji = "🎓"  # définir un emoji pour le rôle Pédagogie
 sos_emoji = "🆘"  # définir un emoji pour le rôle SOS
 
+# Liste de citations
+citations = [
+    "La vie est un mystère qu'il faut vivre, et non un problème à résoudre. - Gandhi",
+    "La vie est une aventure audacieuse ou rien du tout. - Helen Keller",
+    "La vie est soit une grande aventure, soit rien. - Helen Keller",
+    "Le bonheur n'est pas quelque chose de prêt à l'emploi. Il vient de vos propres actions. - Dalai Lama",
+    "La vie est comme une bicyclette. Pour garder l'équilibre, il faut avancer. - Albert Einstein",
+    "La vie ne vaut rien, mais rien ne vaut la vie. - André Malraux",
+    "Le plus grand risque dans la vie, c'est de ne pas en prendre. - Woody Allen",
+    "La vie est trop courte pour être petite. - Benjamin Disraeli",
+    "La vie est faite de petits bonheurs. - Anonyme",
+    "Le secret du bonheur, c'est de regarder chaque situation telle qu'elle est plutôt que de toujours chercher à la changer. - Anonyme",
+    "La vie est belle, mais elle peut être encore plus belle si on la vit avec passion. - Anonyme",
+    "La vie est une chance, saisis-la. La vie est beauté, admire-la. La vie est un rêve, fais-en une réalité. - Mère Teresa"
+]
+
+# Fonction pour renvoyer une citation aléatoire
+
+
+def citation():
+    return random.choice(citations)
 
 
 # Connexion à la base de données SQLite
@@ -101,7 +129,8 @@ async def verify(ctx, url):
     # Vérification de la validité de l'URL
     regex = re.compile(
         r'^https?://'  # http:// ou https://
-        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domaine
+        # domaine
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'
         r'localhost|'  # localhost
         r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # adresse IP
         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
@@ -118,6 +147,7 @@ async def verify(ctx, url):
 
     await ctx.send("iCal stocké avec succès !")
 # Commande pour récupérer l'iCal d'un utilisateur
+
 
 @bot.command()
 async def get_ical(ctx):
@@ -203,30 +233,30 @@ async def on_ready():
 
 @bot.command()
 async def ajrd(ctx):
-  discord_id = str(ctx.author.id)
-  c.execute("SELECT ical_url FROM icals WHERE discord_id=?", (discord_id,))
-  row = c.fetchone()
-  if row is not None:
-    ical_url = row[0]
-  else:
-      await ctx.send("Aucun iCal n'a été stocké pour cet utilisateur.")
+    discord_id = str(ctx.author.id)
+    c.execute("SELECT ical_url FROM icals WHERE discord_id=?", (discord_id,))
+    row = c.fetchone()
+    if row is not None:
+        ical_url = row[0]
+    else:
+        await ctx.send("Aucun iCal n'a été stocké pour cet utilisateur.")
 
-  response = requests.get(ical_url)
-  today = datetime.today().date()
-  if response.status_code == 200:
-    calendar = icalendar.Calendar.from_ical(response.content)
-  for event in calendar.walk("VEVENT"):
-      if event["DTSTART"].dt.date() == today:
-        dtstart = event["DTSTART"].dt
-        dtend = event["DTEND"].dt
-        timezone = pytz.timezone("Europe/Paris")
-        dtstart_paris = dtstart.astimezone(timezone)
-        dtend_paris = dtend.astimezone(timezone)
-        await ctx.send(f"{event['SUMMARY']}")
-        await ctx.send(f"{event['LOCATION']}")
-        await ctx.send(f"{dtstart_paris.strftime('%H:%M')} - {dtend_paris.strftime('%H:%M')}")
-  else:
-      await ctx.send("Impossible de télécharger le fichier .ical")
+    response = requests.get(ical_url)
+    today = datetime.today().date()
+    if response.status_code == 200:
+        calendar = icalendar.Calendar.from_ical(response.content)
+    for event in calendar.walk("VEVENT"):
+        if event["DTSTART"].dt.date() == today:
+            dtstart = event["DTSTART"].dt
+            dtend = event["DTEND"].dt
+            timezone = pytz.timezone("Europe/Paris")
+            dtstart_paris = dtstart.astimezone(timezone)
+            dtend_paris = dtend.astimezone(timezone)
+            await ctx.send(f"{event['SUMMARY']}")
+            await ctx.send(f"{event['LOCATION']}")
+            await ctx.send(f"{dtstart_paris.strftime('%H:%M')} - {dtend_paris.strftime('%H:%M')}")
+    else:
+        await ctx.send("Impossible de télécharger le fichier .ical")
 
 
 @bot.command()

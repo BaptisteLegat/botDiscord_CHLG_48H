@@ -89,6 +89,10 @@ Envoie une citation de motivation
 ```bash
 !citation
 ```
+Renvoie toutes les commandes
+```bash
+!help
+```
 ## Authors
 
 - [@Baptiste Legat](https://github.com/BaptisteLegat)

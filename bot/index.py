@@ -14,7 +14,7 @@ intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
-openai.api_key = "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"
+openai.api_key = "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"
 kolok_role_name = "Kolok"
 
 
@@ -213,10 +213,10 @@ async def gpt(ctx, *, message):
     response = openai.Completion.create(
         engine="text-davinci-002",
         prompt=message,
-        max_tokens=50,
+        max_tokens=100,
         n=1,
         stop=None,
-        temperature=0.7,
+        temperature=0.3,
     )
 
     # Récupérer la réponse de l'API

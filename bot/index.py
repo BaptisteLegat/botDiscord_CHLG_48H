@@ -13,7 +13,7 @@ intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
-openai.api_key = ""
+openai.api_key = "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"
 
 pedagogie_emoji = "🎓"  # définir un emoji pour le rôle Pédagogie
 sos_emoji = "🆘"  # définir un emoji pour le rôle SOS
@@ -169,6 +169,8 @@ async def ajrd(ctx):
   for event in calendar.walk("VEVENT"):
       if event["DTSTART"].dt.date() == today:
         await ctx.send(event["description"])
+        await ctx.send(event["dtstart"]).dt
+        print(event(["DTSTART"]))
         break
   else:
       await ctx.send("Impossible de télécharger le fichier .ical")
@@ -239,4 +241,4 @@ async def ticket(ctx):
             await ticket_channel.delete()
             await ticket_channel.send(f"{ctx.author.mention} Votre ticket a été fermé.")
 
-bot.run('')
+bot.run('MTA5NTk4NzQyMDU1NTY0NDk3OA.GqQbFs.5XPaVhvE4XAGdZQyQh76UlqtlL-uKRKnJywGvY')

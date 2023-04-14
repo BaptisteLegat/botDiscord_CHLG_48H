@@ -140,7 +140,7 @@
 })(jQuery);
 
 const specialLinks = document.querySelectorAll('.special');
-const sectionFour = document.querySelector('#four');
+const sectionFour = document.querySelector('#download');
 
 specialLinks.forEach(link => {
   link.addEventListener('click', () => {

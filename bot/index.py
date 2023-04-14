@@ -111,6 +111,7 @@ citations = [
 
 @bot.command()
 async def citation(ctx):
+    '''Renvoie une citation motivante random'''
     await ctx.send(random.choice(citations))
 
 
@@ -125,6 +126,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS icals
 
 @bot.command()
 async def verify(ctx, url):
+    '''Prend le lien ical en paramètre pour le stocker dans une base de donnée'''
     if not isinstance(ctx.message.channel, discord.abc.PrivateChannel):
         await ctx.send("Cette commande est réservée aux messages privés.")
     else:
@@ -153,6 +155,7 @@ async def verify(ctx, url):
 
 @bot.command()
 async def get_ical(ctx):
+    '''Affiche le lien ical de l'utilisateur s'il l'a déjà envoyé au bot'''
     if not isinstance(ctx.message.channel, discord.abc.PrivateChannel):
         await ctx.send("Cette commande est réservée aux messages privés.")
     else:
@@ -225,11 +228,12 @@ async def on_command_error(ctx, error):
 
 @bot.command()
 async def gpt(ctx, *, message):
+    '''Prend une question en paramètre et renvoie la réponse de ChatGPT'''
     # Envoyer la requête à l'API de ChatGPT
     response = openai.Completion.create(
         engine="text-davinci-002",
         prompt=message,
-        max_tokens=100,
+        max_tokens=200,
         n=1,
         stop=None,
         temperature=0.3,
@@ -249,6 +253,7 @@ async def on_ready():
 
 @bot.command()
 async def ajrd(ctx):
+    '''Renvoie l'emploi du temps de la journée'''
     discord_id = str(ctx.author.id)
     c.execute("SELECT ical_url FROM icals WHERE discord_id=?", (discord_id,))
     row = c.fetchone()
@@ -277,6 +282,7 @@ async def ajrd(ctx):
 
 @bot.command()
 async def demain(ctx):
+    '''renvoie l'emploi du temps du lendemain si des cours sont prévus (ne fonctionnent pas le week-end)'''
     discord_id = str(ctx.author.id)
     c.execute("SELECT ical_url FROM icals WHERE discord_id=?", (discord_id,))
     row = c.fetchone()
@@ -308,6 +314,7 @@ async def demain(ctx):
 
 @bot.command()
 async def semaine(ctx):
+    '''Renvoie l'emploi du temps de toute la semaine en cours'''
     discord_id = str(ctx.author.id)
     c.execute("SELECT ical_url FROM icals WHERE discord_id=?", (discord_id,))
     row = c.fetchone()
@@ -342,6 +349,7 @@ async def semaine(ctx):
 
 @bot.command()
 async def ticket(ctx):
+    '''Crée un ticket visible uniquement par certains rôles en fonction des réactions au message'''
     guild = ctx.guild
     ticket_category = discord.utils.get(guild.categories, name='Tickets')
     if not ticket_category:

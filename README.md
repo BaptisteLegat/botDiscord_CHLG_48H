@@ -18,7 +18,7 @@ Lien d'invitation du bot : https://discord.com/api/oauth2/authorize?client_id=10
 - Connexion aux emplois du temps
 - Sondages
 - Proposition d'afterwork
-- Envoie de messages officiels
+- Envoi de messages officiels
 - Questions à ChatGPT
 
 

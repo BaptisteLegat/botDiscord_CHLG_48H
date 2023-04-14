@@ -45,7 +45,7 @@ Envoie un message dans le channel général pour annoncer un afterwork prévu à
 ```
 Pose une question à choix multiple avec des réactions pour y répondre, n'est pas limité au nombre de réponse possible, les guillemets sont indispensables
 ```bash
-  !sondage "Question à choix multiple" "Réponse 1" "Réponse2" "Réponse 3"
+  !sondage "Question à choix multiple" "Réponse 1" "Réponse 2" "Réponse 3"
 ```
 Envoie l'emploi du temps du jour même (Intervenant, Salle, Heures)
 ```bash

@@ -14,6 +14,71 @@ intents.members = True
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 openai.api_key = ""
+kolok_role_name = "Kolok"
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send('Commande inconnue.')
+    else:
+        raise error
+
+@bot.command()
+async def send(ctx):
+    message = ctx.message.content
+    channel = ctx.message.channel
+    text_to_send = message.split('!send ')[1]
+    await channel.send(text_to_send)
+    await ctx.message.delete()
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    if payload.message_id == 1096024112687759371:
+        if payload.emoji.name == '👍':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            role = discord.utils.get(guild.roles, name="SOS")
+            await member.add_roles(role)
+            print(f"Attribuer le rôle {role.name} à {member.display_name}")
+        if payload.emoji.name == '👽':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            role = discord.utils.get(guild.roles, name="Pédagogie")
+            await member.add_roles(role)
+            print(f"Attribuer le rôle {role.name} à {member.display_name}")
+        if payload.emoji.name == '🍹':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            role = discord.utils.get(guild.roles, name="Kolok")
+            await member.add_roles(role)
+            print(f"Attribuer le rôle {role.name} à {member.display_name}")
+        if payload.emoji.name == '🔔':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            role = discord.utils.get(guild.roles, name="Yrappel")
+            await member.add_roles(role)
+            print(f"Attribuer le rôle {role.name} à {member.display_name}")
+            message = "Vous vous êtes bien inscrit au Yrappel\nVeuillez m'envoyer votre lien privé Hyperplanning précédé de la commande !verify\n\nPour obtenir ce lien veuillez vous rendre sur votre emplois du temps Hyperplanning et cliquer sur le petit logo ical en haut à droite\nExemple : !verify https://hp22.ynov.com/LYO/Telechargements/ical/Edt_YOURNAME"
+            await member.send(message)
+
+@bot.command()
+async def sondage(ctx, question, *options):
+    message = f"{question}\n\nRépondez avec les réactions ci-dessous :\n"
+    for option in options:
+        message += f"{options.index(option)+1}: {option}\n"
+    reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"]
+    message = await ctx.send("**{}**\n\n{}".format(question, "\n".join("{} {}".format(reactions[i], option) for i, option in enumerate(options))))
+    for i in range(len(options)):
+        await message.add_reaction(reactions[i])
+    await ctx.message.delete()
+
+@bot.command()
+async def afterwork(ctx):
+    guild = ctx.guild
+    kolok_role = discord.utils.get(guild.roles, name=kolok_role_name)
+    general_channel = discord.utils.get(guild.channels, name="général")
+    sent_message = await general_channel.send(f"{kolok_role.mention} Un afterwork est prévu à la Kolok ce soir, réagissez si vous venez !")
+    await sent_message.add_reaction('👍')
 
 pedagogie_emoji = "🎓"  # définir un emoji pour le rôle Pédagogie
 sos_emoji = "🆘"  # définir un emoji pour le rôle SOS
@@ -239,4 +304,4 @@ async def ticket(ctx):
             await ticket_channel.delete()
             await ticket_channel.send(f"{ctx.author.mention} Votre ticket a été fermé.")
 
-bot.run('')
+bot.run('MTA5NTk4NzQyMDU1NTY0NDk3OA.GqQbFs.5XPaVhvE4XAGdZQyQh76UlqtlL-uKRKnJywGvY')

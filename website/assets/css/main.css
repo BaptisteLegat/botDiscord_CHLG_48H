@@ -49,7 +49,7 @@ blockquote, q {
 .command-line-wrapper {
     display: flex;
     flex-direction: column;
-    width: 65%; /* Ajustez la largeur pour prendre plus de place vers la droite */
+    width: 65%;
 }
 
 .command-line {

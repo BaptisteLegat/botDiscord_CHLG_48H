@@ -95,7 +95,9 @@ c.execute('''CREATE TABLE IF NOT EXISTS icals
 
 
 @bot.command()
-async def stocker_ical(ctx, url):
+async def verify(ctx, url):
+    if not isinstance(ctx.message.channel, discord.abc.PrivateChannel):
+        await ctx.send("Cette commande est réservée aux messages privés.")
     # Vérification de la validité de l'URL
     regex = re.compile(
         r'^https?://'  # http:// ou https://
@@ -119,6 +121,8 @@ async def stocker_ical(ctx, url):
 
 @bot.command()
 async def get_ical(ctx):
+    if not isinstance(ctx.message.channel, discord.abc.PrivateChannel):
+        await ctx.send("Cette commande est réservée aux messages privés.")
     # Récupération de l'ID de l'utilisateur sur Discord
     discord_id = str(ctx.author.id)
 

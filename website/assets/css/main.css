@@ -269,6 +269,11 @@ a.special:not(.button) {
     margin: 0 0 2em 0;
     text-transform: uppercase;
     cursor: pointer;
+    border: #23272A 1px solid;
+    border-radius: 5px;
+    padding: 10px 20px;
+    background-color: #23272A;
+    width: fit-content
 }
 
 strong, b {
@@ -3365,7 +3370,7 @@ button:disabled,
     display: block;
     font-family: Raleway, Helvetica, sans-serif;
     font-size: 0.8em;
-    font-weight: 200;
+    font-weight: bold;
     letter-spacing: 0.1em;
     line-height: 1.85em;
     padding: 0.75em 0;

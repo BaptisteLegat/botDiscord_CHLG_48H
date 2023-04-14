@@ -40,7 +40,7 @@ Pose une question à choix multiple avec des réactions pour y répondre, n'est 
 ```
 Envoie l'emploi du temps du jour même (Intervenant, Salle, Heures)
 ```bash
-  !aujrd
+  !ajrd
 ```
 De même pour le lendemain
 ```bash

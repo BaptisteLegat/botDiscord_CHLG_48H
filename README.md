@@ -16,7 +16,7 @@ Ces commandes doivent être exécutée sur un OS Linux
 $ sudo apt install pip
 $ pip install python3
 
-$ pip install discord.py re sqlite3 pytz icalendar openai asyncio
+$ pip install discord.py pytz icalendar openai asyncio
 ```
 
     

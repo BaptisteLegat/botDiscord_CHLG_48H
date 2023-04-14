@@ -29,6 +29,7 @@ async def on_command_error(ctx, error):
 
 @bot.command()
 async def send(ctx):
+    '''Le bot envoie le message passé en paramètre'''
     message = ctx.message.content
     channel = ctx.message.channel
     text_to_send = message.split('!send ')[1]
@@ -69,6 +70,7 @@ async def on_raw_reaction_add(payload):
 
 @bot.command()
 async def sondage(ctx, question, *options):
+    '''Envoie une question à choix multiple passé en paramètre ["question"] ["Reponse 1"] ["Reponse 2"] etc...'''
     message = f"{question}\n\nRépondez avec les réactions ci-dessous :\n"
     for option in options:
         message += f"{options.index(option)+1}: {option}\n"
@@ -82,6 +84,7 @@ async def sondage(ctx, question, *options):
 
 @bot.command()
 async def afterwork(ctx):
+    '''Envoie un message dans le channel général pour proposer un afterwork à la Kolok'''
     guild = ctx.guild
     kolok_role = discord.utils.get(guild.roles, name=kolok_role_name)
     general_channel = discord.utils.get(guild.channels, name="général")
@@ -174,7 +177,7 @@ async def get_ical(ctx):
 
 @bot.command()
 async def rappel(ctx, date_str, heure_str, *, message):
-    """Crée un rappel à une date et une heure spécifiques."""
+    """Crée un rappel à une date et une heure spécifiques. [AAAA-MM-DD] [HH:MM] [Nom du rappel]"""
     try:
         # Convertir la date et l'heure en objets datetime
         date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()

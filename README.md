@@ -58,6 +58,10 @@ Envoie un rappel d'une tâche à la date indiquée
 ```bash
   !rappel [AAAA-MM-DD] [HH:MM] [Ce qui doit être rappelé]
 ```
+Envoie la liste des rappels en sommeil pour l'utilisateur
+```bash
+!mes_rappels
+```
 Stock l'ical de l'étudiant dans une base de donnée locale au bot pour qu'il puisse lui envoyer son emploi du temps quotidiennement | Commande uniquement disponible en mp
 ```bash
 !verify [lien_ical] 
@@ -66,7 +70,9 @@ Renvoie l'ical de l'étudiant qui envoie le message | Commande uniquement dispon
 ```bash
 !get_ical
 ```
-Pose une question à ChatGPT, le bot renvoie la réponse
+Pose une question à ChatGPT, le bot renvoie la réponse.  
+La réponse n'est pas bridée, le bot peut partir en roue libre.
+Les réponses sont limités en mot (100 tokens = 3500 mots).
 ```bash
 !gpt [Question]
 ```

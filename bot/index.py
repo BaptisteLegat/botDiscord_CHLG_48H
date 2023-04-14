@@ -109,9 +109,9 @@ citations = [
 
 # Fonction pour renvoyer une citation aléatoire
 
-
-def citation():
-    return random.choice(citations)
+@bot.command()
+async def citation(ctx):
+    await ctx.send(random.choice(citations))
 
 
 # Connexion à la base de données SQLite

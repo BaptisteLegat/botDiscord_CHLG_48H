@@ -118,26 +118,6 @@ async def stocker_ical(ctx, url):
 # Commande pour récupérer l'iCal d'un utilisateur
 
 @bot.command()
-async def time(ctx):
-  date_start_str = '20220915T070000Z'
-  date_start_obj = datetime.strptime(date_start_str, '%Y%m%dT%H%M%SZ')
-
-  date_end_str = '20220915T110000Z'
-  date_end_obj = datetime.strptime(date_end_str, '%Y%m%dT%H%M%SZ')
-
-  # Définir le fuseau horaire UTC
-  timezone_utc = pytz.timezone('UTC')
-
-  # Convertir la date en heure locale
-  timezone_local = pytz.timezone('Europe/Paris') # Remplacez "Europe/Paris" par votre fuseau horaire local
-  date_start_local = timezone_utc.localize(date_start_obj).astimezone(timezone_local)
-  date_end_local = timezone_utc.localize(date_end_obj).astimezone(timezone_local)
-
-  # Afficher la date locale
-  await ctx.send(date_start_local.strftime('%Y-%m-%d %H:%M:%S'))
-  await ctx.send(date_end_local.strftime('%Y-%m-%d %H:%M:%S'))
-
-@bot.command()
 async def get_ical(ctx):
     # Récupération de l'ID de l'utilisateur sur Discord
     discord_id = str(ctx.author.id)

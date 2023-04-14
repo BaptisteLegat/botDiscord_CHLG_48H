@@ -49,7 +49,7 @@ blockquote, q {
 .command-line-wrapper {
     display: flex;
     flex-direction: column;
-    width: 60%; /* Ajustez la largeur pour prendre plus de place vers la droite */
+    width: 65%; /* Ajustez la largeur pour prendre plus de place vers la droite */
 }
 
 .command-line {
@@ -59,15 +59,15 @@ blockquote, q {
     border-radius: 4px;
     padding: 8px 12px;
     font-family: 'Consolas', monospace;
-    font-size: 16px;
+    font-size: 18px;
     margin-bottom: 5px;
+    text-align: left;
 }
 
 .command-description {
     color: #FFFFFF;
-    font-family: 'Arial', sans-serif;
-    font-size: 14px;
     margin-left: 12px;
+    text-align: justify;
 }
 
 .features .image img {
@@ -4255,7 +4255,7 @@ body.is-preload #banner p {
 @media screen and (max-width: 1280px) {
 
     #cmd {
-        background-color: #2e3141;
+        background-color: #4c5c96;
         background-image: linear-gradient(to top, rgba(46, 49, 65, 0.8), rgba(46, 49, 65, 0.8)), url("../../images/bg.jpg");
         background-size: auto,
         cover;
@@ -4549,6 +4549,8 @@ body.is-preload #banner p {
   }
 }
 
-.icon-container {
-    position: fixed;
-}
+@media screen and (max-width: 980px) {
+    #cmd .inner .command-line-wrapper {
+        min-width: 100%;
+    }
+    }

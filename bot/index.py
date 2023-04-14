@@ -169,15 +169,6 @@ async def get_ical(ctx):
         else:
             await ctx.send("Aucun iCal n'a été stocké pour cet utilisateur.")
 
-
-@bot.command()
-async def bonjour(ctx):
-    if ctx.author.guild_permissions.manage_roles:
-        await ctx.send("Bonjour, vous avez les permissions pour gérer les rôles.")
-    else:
-        await ctx.send("Bonjour!")
-
-
 @bot.command()
 async def rappel(ctx, date_str, heure_str, *, message):
     """Crée un rappel à une date et une heure spécifiques."""

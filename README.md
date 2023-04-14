@@ -50,10 +50,6 @@ De même pour toute la semaine actuelle
 ```bash
   !semaine
 ```
-Renvoie uniquement l'heure du prochain cours
-```bash
-!time
-```
 Ouvre un channel privé accessible uniquement par son auteur et par le rôle qu'il souhaitera mentionner, toutes les instructions sont contenues dans le message qu'envoie le bot dans le channel
 ```bash
   !ticket
@@ -62,11 +58,11 @@ Envoie un rappel d'une tâche à la date indiquée
 ```bash
   !rappel [AAAA-MM-DD] [HH:MM] [Ce qui doit être rappelé]
 ```
-Stock l'ical de l'étudiant dans une base de donnée locale au bot pour qu'il puisse lui envoyer son emploi du temps quotidiennement
+Stock l'ical de l'étudiant dans une base de donnée locale au bot pour qu'il puisse lui envoyer son emploi du temps quotidiennement | Commande uniquement disponible en mp
 ```bash
-!stocker_ical [lien_ical] 
+!verify [lien_ical] 
 ```
-Renvoie l'ical de l'étudiant qui envoie le message
+Renvoie l'ical de l'étudiant qui envoie le message | Commande uniquement disponible en mp
 ```bash
 !get_ical
 ```

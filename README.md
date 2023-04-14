@@ -19,6 +19,7 @@ Lien d'invitation du bot : https://discord.com/api/oauth2/authorize?client_id=10
 - Sondages
 - Proposition d'afterwork
 - Envoie de messages officiels
+- Questions à ChatGPT
 
 
 ## Liste des commandes

@@ -17,6 +17,8 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 openai.api_key = "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"
 kolok_role_name = "Kolok"
 
+rappels = []
+
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -24,7 +26,6 @@ async def on_command_error(ctx, error):
         await ctx.send('Commande inconnue.')
     else:
         raise error
-
 
 @bot.command()
 async def send(ctx):
@@ -180,25 +181,47 @@ async def bonjour(ctx):
 @bot.command()
 async def rappel(ctx, date_str, heure_str, *, message):
     """Crée un rappel à une date et une heure spécifiques."""
-    # Convertir la date et l'heure en objets datetime
-    date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
-    heure_obj = datetime.strptime(heure_str, '%H:%M').time()
-    rappel_datetime = datetime.combine(date_obj, heure_obj)
+    try:
+        # Convertir la date et l'heure en objets datetime
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+        heure_obj = datetime.strptime(heure_str, '%H:%M').time()
+        rappel_datetime = datetime.combine(date_obj, heure_obj)
 
-    # Calculer le temps d'attente avant le rappel
-    maintenant = datetime.now()
-    temps_attente = (rappel_datetime - maintenant).total_seconds()
+        # Calculer le temps d'attente avant le rappel
+        maintenant = datetime.now()
+        temps_attente = (rappel_datetime - maintenant).total_seconds()
 
-    # Vérifier que le temps d'attente est positif
-    if temps_attente < 0:
-        await ctx.send("La date et l'heure spécifiées sont déjà passées.")
-        return
+        # Vérifier que le temps d'attente est positif
+        if temps_attente < 0:
+            await ctx.send("La date et l'heure spécifiées sont déjà passées.")
+            return
 
-    # Attendre le temps nécessaire avant d'envoyer le rappel
-    await asyncio.sleep(temps_attente)
+        # Confirmer la création du rappel
+        await ctx.send(f"Rappel pour {rappel_datetime} créé avec succès.")
+        rappels.append((rappel_datetime, ctx.author.id, message))
+        # Attendre le temps nécessaire avant d'envoyer le rappel
+        await asyncio.sleep(temps_attente)
 
-    # Envoyer le rappel
-    await ctx.send(f"{ctx.author.mention}, voici votre rappel : {message}")
+        # Envoyer le rappel
+        await ctx.send(f"{ctx.author.mention}, voici votre rappel : {message}")
+        rappels.remove((rappel_datetime, ctx.author.id, message))
+
+    except ValueError:
+        # Expliquer comment utiliser la commande si elle est mal renseignée
+        await ctx.send("Utilisation de la commande : !rappel YYYY-MM-DD HH:MM Message")
+
+
+@bot.command()
+async def mes_rappels(ctx):
+    """Affiche la liste des rappels pour l'utilisateur."""
+    user_rappels = [r for r in rappels if r[1] == ctx.author.id]
+    if not user_rappels:
+        await ctx.send("Vous n'avez pas de rappels enregistrés.")
+    else:
+        message = "Voici la liste de vos rappels :\n"
+        for rappel in user_rappels:
+            message += f"{rappel[0]} : {rappel[2]}\n"
+        await ctx.send(message)
 
 
 @bot.event

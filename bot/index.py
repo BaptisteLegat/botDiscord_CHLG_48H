@@ -126,45 +126,47 @@ c.execute('''CREATE TABLE IF NOT EXISTS icals
 async def verify(ctx, url):
     if not isinstance(ctx.message.channel, discord.abc.PrivateChannel):
         await ctx.send("Cette commande est réservée aux messages privés.")
-    # Vérification de la validité de l'URL
-    regex = re.compile(
-        r'^https?://'  # http:// ou https://
-        # domaine
-        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'
-        r'localhost|'  # localhost
-        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # adresse IP
-        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-    if not regex.match(url):
-        await ctx.send("URL invalide.")
-        return
+    else:
+        # Vérification de la validité de l'URL
+        regex = re.compile(
+            r'^https?://'  # http:// ou https://
+            # domaine
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'
+            r'localhost|'  # localhost
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # adresse IP
+            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+        if not regex.match(url):
+            await ctx.send("URL invalide.")
+            return
 
-    # Récupération de l'ID de l'utilisateur sur Discord
-    discord_id = str(ctx.author.id)
+        # Récupération de l'ID de l'utilisateur sur Discord
+        discord_id = str(ctx.author.id)
 
-    # Ajout de l'iCal dans la base de données
-    c.execute("INSERT INTO icals VALUES (?, ?)", (discord_id, url))
-    conn.commit()
+        # Ajout de l'iCal dans la base de données
+        c.execute("INSERT INTO icals VALUES (?, ?)", (discord_id, url))
+        conn.commit()
 
-    await ctx.send("iCal stocké avec succès !")
-# Commande pour récupérer l'iCal d'un utilisateur
+        await ctx.send("iCal stocké avec succès !")
+    # Commande pour récupérer l'iCal d'un utilisateur
 
 
 @bot.command()
 async def get_ical(ctx):
     if not isinstance(ctx.message.channel, discord.abc.PrivateChannel):
         await ctx.send("Cette commande est réservée aux messages privés.")
-    # Récupération de l'ID de l'utilisateur sur Discord
-    discord_id = str(ctx.author.id)
-
-    # Récupération de l'iCal dans la base de données
-    c.execute("SELECT ical_url FROM icals WHERE discord_id=?", (discord_id,))
-    row = c.fetchone()
-    if row is not None:
-        # Envoi de l'iCal à l'utilisateur
-        ical_url = row[0]
-        await ctx.send(f"Voici votre iCal: {ical_url}")
     else:
-        await ctx.send("Aucun iCal n'a été stocké pour cet utilisateur.")
+        # Récupération de l'ID de l'utilisateur sur Discord
+        discord_id = str(ctx.author.id)
+
+        # Récupération de l'iCal dans la base de données
+        c.execute("SELECT ical_url FROM icals WHERE discord_id=?", (discord_id,))
+        row = c.fetchone()
+        if row is not None:
+            # Envoi de l'iCal à l'utilisateur
+            ical_url = row[0]
+            await ctx.send(f"Voici votre iCal: {ical_url}")
+        else:
+            await ctx.send("Aucun iCal n'a été stocké pour cet utilisateur.")
 
 
 @bot.command()

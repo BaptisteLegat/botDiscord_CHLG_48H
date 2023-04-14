@@ -83,7 +83,7 @@ async def afterwork(ctx):
 pedagogie_emoji = "🎓"  # définir un emoji pour le rôle Pédagogie
 sos_emoji = "🆘"  # définir un emoji pour le rôle SOS
 
-# url = "https://hp22.ynov.com/LYO/Telechargements/ical/Edt_POINSIGNON.ics?version=2022.0.4.3&idICal=1C9DB9E82A019FE591DAA7372A416A6E&param=643d5b312e2e36325d2666683d3126663d31"
+
 
 # Connexion à la base de données SQLite
 conn = sqlite3.connect('calendriers.db')
@@ -233,31 +233,82 @@ async def ajrd(ctx):
     calendar = icalendar.Calendar.from_ical(response.content)
   for event in calendar.walk("VEVENT"):
       if event["DTSTART"].dt.date() == today:
-        await ctx.send(event["description"])
-        break
+        dtstart = event["DTSTART"].dt
+        dtend = event["DTEND"].dt
+        timezone = pytz.timezone("Europe/Paris")
+        dtstart_paris = dtstart.astimezone(timezone)
+        dtend_paris = dtend.astimezone(timezone)
+        await ctx.send(f"{event['SUMMARY']}")
+        await ctx.send(f"{event['LOCATION']}")
+        await ctx.send(f"{dtstart_paris.strftime('%H:%M')} - {dtend_paris.strftime('%H:%M')}")
   else:
       await ctx.send("Impossible de télécharger le fichier .ical")
 
 
 @bot.command()
 async def demain(ctx):
-  discord_id = str(ctx.author.id)
-  c.execute("SELECT ical_url FROM icals WHERE discord_id=?", (discord_id,))
-  row = c.fetchone()
-  if row is not None:
-    ical_url = row[0]
-  else:
-      await ctx.send("Aucun iCal n'a été stocké pour cet utilisateur.")
-  response = requests.get(ical_url)
-  tomorrow = datetime.today().date() + timedelta(days=1)
-  if response.status_code == 200:
-      calendar = icalendar.Calendar.from_ical(response.content)
-  for event in calendar.walk("VEVENT"):
-      if event["DTSTART"].dt.date() == tomorrow:
-          await ctx.send(event["description"])
-          break
-  else:
-      await ctx.send("Impossible de télécharger le fichier .ical")
+    discord_id = str(ctx.author.id)
+    c.execute("SELECT ical_url FROM icals WHERE discord_id=?", (discord_id,))
+    row = c.fetchone()
+    if row is not None:
+        ical_url = row[0]
+    else:
+        await ctx.send("Aucun iCal n'a été stocké pour cet utilisateur.")
+        return
+
+    response = requests.get(ical_url)
+    tomorrow = datetime.today().date() + timedelta(days=1)
+    if response.status_code == 200:
+        calendar = icalendar.Calendar.from_ical(response.content)
+        for event in calendar.walk("VEVENT"):
+            if event["DTSTART"].dt.date() == tomorrow:
+                dtstart = event["DTSTART"].dt
+                dtend = event["DTEND"].dt
+                timezone = pytz.timezone("Europe/Paris")
+                dtstart_paris = dtstart.astimezone(timezone)
+                dtend_paris = dtend.astimezone(timezone)
+                await ctx.send(f"{event['SUMMARY']}")
+                await ctx.send(f"{event['LOCATION']}")
+                await ctx.send(f"{dtstart_paris.strftime('%H:%M')} - {dtend_paris.strftime('%H:%M')}")
+        else:
+            await ctx.send("Aucun événement trouvé pour demain.")
+    else:
+        await ctx.send("Impossible de télécharger le fichier .ical")
+
+
+@bot.command()
+async def semaine(ctx):
+    discord_id = str(ctx.author.id)
+    c.execute("SELECT ical_url FROM icals WHERE discord_id=?", (discord_id,))
+    row = c.fetchone()
+    if row is not None:
+        ical_url = row[0]
+    else:
+        await ctx.send("Aucun iCal n'a été stocké pour cet utilisateur.")
+        return
+
+    response = requests.get(ical_url)
+    today = datetime.today().date()
+    monday = today - timedelta(days=today.weekday())
+    friday = monday + timedelta(days=4)
+    if response.status_code == 200:
+        calendar = icalendar.Calendar.from_ical(response.content)
+        for event in calendar.walk("VEVENT"):
+            if monday <= event["DTSTART"].dt.date() <= friday:
+                dtstart = event["DTSTART"].dt
+                dtend = event["DTEND"].dt
+                timezone = pytz.timezone("Europe/Paris")
+                dtstart_paris = dtstart.astimezone(timezone)
+                dtend_paris = dtend.astimezone(timezone)
+                await ctx.send(f"{event['SUMMARY']}")
+                await ctx.send(f"{event['LOCATION']}")
+                await ctx.send(f"{dtstart_paris.strftime('%a %d/%m %H:%M')} - {dtend_paris.strftime('%H:%M')}")
+                await ctx.send("------------------------------")
+        else:
+            await ctx.send("Aucun événement trouvé pour cette semaine.")
+    else:
+        await ctx.send("Impossible de télécharger le fichier .ical")
+
 
 @bot.command()
 async def ticket(ctx):

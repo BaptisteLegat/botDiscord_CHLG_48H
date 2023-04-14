@@ -14,11 +14,76 @@ intents.members = True
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 openai.api_key = "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"
+kolok_role_name = "Kolok"
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send('Commande inconnue.')
+    else:
+        raise error
+
+@bot.command()
+async def send(ctx):
+    message = ctx.message.content
+    channel = ctx.message.channel
+    text_to_send = message.split('!send ')[1]
+    await channel.send(text_to_send)
+    await ctx.message.delete()
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    if payload.message_id == 1096024112687759371:
+        if payload.emoji.name == '👍':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            role = discord.utils.get(guild.roles, name="SOS")
+            await member.add_roles(role)
+            print(f"Attribuer le rôle {role.name} à {member.display_name}")
+        if payload.emoji.name == '👽':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            role = discord.utils.get(guild.roles, name="Pédagogie")
+            await member.add_roles(role)
+            print(f"Attribuer le rôle {role.name} à {member.display_name}")
+        if payload.emoji.name == '🍹':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            role = discord.utils.get(guild.roles, name="Kolok")
+            await member.add_roles(role)
+            print(f"Attribuer le rôle {role.name} à {member.display_name}")
+        if payload.emoji.name == '🔔':
+            guild = bot.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            role = discord.utils.get(guild.roles, name="Yrappel")
+            await member.add_roles(role)
+            print(f"Attribuer le rôle {role.name} à {member.display_name}")
+            message = "Vous vous êtes bien inscrit au Yrappel\nVeuillez m'envoyer votre lien privé Hyperplanning précédé de la commande !verify\n\nPour obtenir ce lien veuillez vous rendre sur votre emplois du temps Hyperplanning et cliquer sur le petit logo ical en haut à droite\nExemple : !verify https://hp22.ynov.com/LYO/Telechargements/ical/Edt_YOURNAME"
+            await member.send(message)
+
+@bot.command()
+async def sondage(ctx, question, *options):
+    message = f"{question}\n\nRépondez avec les réactions ci-dessous :\n"
+    for option in options:
+        message += f"{options.index(option)+1}: {option}\n"
+    reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"]
+    message = await ctx.send("**{}**\n\n{}".format(question, "\n".join("{} {}".format(reactions[i], option) for i, option in enumerate(options))))
+    for i in range(len(options)):
+        await message.add_reaction(reactions[i])
+    await ctx.message.delete()
+
+@bot.command()
+async def afterwork(ctx):
+    guild = ctx.guild
+    kolok_role = discord.utils.get(guild.roles, name=kolok_role_name)
+    general_channel = discord.utils.get(guild.channels, name="général")
+    sent_message = await general_channel.send(f"{kolok_role.mention} Un afterwork est prévu à la Kolok ce soir, réagissez si vous venez !")
+    await sent_message.add_reaction('👍')
 
 pedagogie_emoji = "🎓"  # définir un emoji pour le rôle Pédagogie
 sos_emoji = "🆘"  # définir un emoji pour le rôle SOS
 
-# url = "https://hp22.ynov.com/LYO/Telechargements/ical/Edt_POINSIGNON.ics?version=2022.0.4.3&idICal=1C9DB9E82A019FE591DAA7372A416A6E&param=643d5b312e2e36325d2666683d3126663d31"
+
 
 # Connexion à la base de données SQLite
 conn = sqlite3.connect('calendriers.db')
@@ -168,33 +233,82 @@ async def ajrd(ctx):
     calendar = icalendar.Calendar.from_ical(response.content)
   for event in calendar.walk("VEVENT"):
       if event["DTSTART"].dt.date() == today:
-        await ctx.send(event["description"])
-        await ctx.send(event["dtstart"]).dt
-        print(event(["DTSTART"]))
-        break
+        dtstart = event["DTSTART"].dt
+        dtend = event["DTEND"].dt
+        timezone = pytz.timezone("Europe/Paris")
+        dtstart_paris = dtstart.astimezone(timezone)
+        dtend_paris = dtend.astimezone(timezone)
+        await ctx.send(f"{event['SUMMARY']}")
+        await ctx.send(f"{event['LOCATION']}")
+        await ctx.send(f"{dtstart_paris.strftime('%H:%M')} - {dtend_paris.strftime('%H:%M')}")
   else:
       await ctx.send("Impossible de télécharger le fichier .ical")
 
 
 @bot.command()
 async def demain(ctx):
-  discord_id = str(ctx.author.id)
-  c.execute("SELECT ical_url FROM icals WHERE discord_id=?", (discord_id,))
-  row = c.fetchone()
-  if row is not None:
-    ical_url = row[0]
-  else:
-      await ctx.send("Aucun iCal n'a été stocké pour cet utilisateur.")
-  response = requests.get(ical_url)
-  tomorrow = datetime.today().date() + timedelta(days=1)
-  if response.status_code == 200:
-      calendar = icalendar.Calendar.from_ical(response.content)
-  for event in calendar.walk("VEVENT"):
-      if event["DTSTART"].dt.date() == tomorrow:
-          await ctx.send(event["description"])
-          break
-  else:
-      await ctx.send("Impossible de télécharger le fichier .ical")
+    discord_id = str(ctx.author.id)
+    c.execute("SELECT ical_url FROM icals WHERE discord_id=?", (discord_id,))
+    row = c.fetchone()
+    if row is not None:
+        ical_url = row[0]
+    else:
+        await ctx.send("Aucun iCal n'a été stocké pour cet utilisateur.")
+        return
+
+    response = requests.get(ical_url)
+    tomorrow = datetime.today().date() + timedelta(days=1)
+    if response.status_code == 200:
+        calendar = icalendar.Calendar.from_ical(response.content)
+        for event in calendar.walk("VEVENT"):
+            if event["DTSTART"].dt.date() == tomorrow:
+                dtstart = event["DTSTART"].dt
+                dtend = event["DTEND"].dt
+                timezone = pytz.timezone("Europe/Paris")
+                dtstart_paris = dtstart.astimezone(timezone)
+                dtend_paris = dtend.astimezone(timezone)
+                await ctx.send(f"{event['SUMMARY']}")
+                await ctx.send(f"{event['LOCATION']}")
+                await ctx.send(f"{dtstart_paris.strftime('%H:%M')} - {dtend_paris.strftime('%H:%M')}")
+        else:
+            await ctx.send("Aucun événement trouvé pour demain.")
+    else:
+        await ctx.send("Impossible de télécharger le fichier .ical")
+
+
+@bot.command()
+async def semaine(ctx):
+    discord_id = str(ctx.author.id)
+    c.execute("SELECT ical_url FROM icals WHERE discord_id=?", (discord_id,))
+    row = c.fetchone()
+    if row is not None:
+        ical_url = row[0]
+    else:
+        await ctx.send("Aucun iCal n'a été stocké pour cet utilisateur.")
+        return
+
+    response = requests.get(ical_url)
+    today = datetime.today().date()
+    monday = today - timedelta(days=today.weekday())
+    friday = monday + timedelta(days=4)
+    if response.status_code == 200:
+        calendar = icalendar.Calendar.from_ical(response.content)
+        for event in calendar.walk("VEVENT"):
+            if monday <= event["DTSTART"].dt.date() <= friday:
+                dtstart = event["DTSTART"].dt
+                dtend = event["DTEND"].dt
+                timezone = pytz.timezone("Europe/Paris")
+                dtstart_paris = dtstart.astimezone(timezone)
+                dtend_paris = dtend.astimezone(timezone)
+                await ctx.send(f"{event['SUMMARY']}")
+                await ctx.send(f"{event['LOCATION']}")
+                await ctx.send(f"{dtstart_paris.strftime('%a %d/%m %H:%M')} - {dtend_paris.strftime('%H:%M')}")
+                await ctx.send("------------------------------")
+        else:
+            await ctx.send("Aucun événement trouvé pour cette semaine.")
+    else:
+        await ctx.send("Impossible de télécharger le fichier .ical")
+
 
 @bot.command()
 async def ticket(ctx):
